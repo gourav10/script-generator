@@ -1,10 +1,25 @@
 import os
 import pickle
 import torch
-
+from collections import Counter
 
 SPECIAL_WORDS = {'PADDING': '<PAD>'}
 
+def create_lookup_tables(text):
+    """
+    Create lookup tables for vocabulary
+    :param text: The text of tv scripts split into words
+    :return: A tuple of dicts (vocab_to_int, int_to_vocab)
+    """
+    # TODO: Implement Function
+    vocab_to_int, int_to_vocab = dict(), dict()
+    counts = Counter(text)
+    vocab = sorted(counts, key=counts.get, reverse=True)
+    vocab_to_int = {word: ii for ii, word in enumerate(vocab, 1)}
+    int_to_vocab = {ii: word for word, ii in vocab_to_int.items()}
+
+    # return tuple
+    return (vocab_to_int, int_to_vocab)
 
 def load_data(path):
     """
@@ -34,11 +49,11 @@ def token_lookup():
                  '\n': '||return||'}
     return punc_dict
 
-def preprocess_and_save_data(dataset_path, token_lookup, create_lookup_tables):
+def preprocess_and_save_data(text, token_lookup, create_lookup_tables):
     """
     Preprocess Text Data
     """
-    text = load_data(dataset_path)
+    # text = load_data(dataset_path)
     
     # Ignore notice, since we don't use it for analysing the data
     #text = text[81:]
@@ -54,18 +69,15 @@ def preprocess_and_save_data(dataset_path, token_lookup, create_lookup_tables):
     int_text = [vocab_to_int[word] for word in text]
     pickle.dump((int_text, vocab_to_int, int_to_vocab, token_dict), open('preprocess.p', 'wb'))
 
-
 def load_preprocess():
     """
     Load the Preprocessed Training data and return them in batches of <batch_size> or less
     """
     return pickle.load(open('preprocess.p', mode='rb'))
 
-
 def save_model(filename, decoder):
     save_filename = os.path.splitext(os.path.basename(filename))[0] + '.pt'
     torch.save(decoder, save_filename)
-
 
 def load_model(filename):
     save_filename = os.path.splitext(os.path.basename(filename))[0] + '.pt'
