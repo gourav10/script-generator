@@ -1,3 +1,9 @@
+#####################################
+# Name: Gopal Krishna, Gourav Beura #
+# Course: CS 7180                   #
+# Date: 11/8/2022                   #
+#####################################
+
 import helper
 import numpy as np
 import data_analysis as da
@@ -37,9 +43,9 @@ def main():
 
     # Model parameters
     # Vocab size
-    vocab_size = len(vocab_to_int)
+    vocab_size = len(vocab_to_int)+1
     # Output size
-    output_size = len(vocab_to_int)
+    output_size = len(vocab_to_int)+1
     # Embedding Dimension
     embedding_dim = 500
     # Hidden Dimension

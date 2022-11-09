@@ -13,8 +13,8 @@ class RNN(nn.Module):
         :param dropout: dropout to add in between LSTM/GRU layers
         """
         super(RNN, self).__init__()
-        # TODO: Implement function
-        self.train_on_gpu = False#torch.cuda.is_available()
+
+        self.train_on_gpu = torch.cuda.is_available()
         # set class variables
         self.output_size = output_size
         self.n_layers = n_layers
@@ -60,8 +60,8 @@ class RNN(nn.Module):
         
         # initialize hidden state with zero weights, and move to GPU if available
         if (self.train_on_gpu):
-            hidden = (weights.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(device='cpu'),
-                      weights.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(device='cpu'))
+            hidden = (weights.new(self.n_layers, batch_size, self.hidden_dim).zero_().cuda(),
+                      weights.new(self.n_layers, batch_size, self.hidden_dim).zero_().cuda())
         else:
             hidden = (weights.new(self.n_layers, batch_size, self.hidden_dim).zero_(),
                       weights.new(self.n_layers, batch_size, self.hidden_dim).zero_())

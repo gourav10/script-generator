@@ -1,3 +1,9 @@
+#####################################
+# Name: Gopal Krishna, Gourav Beura #
+# Course: CS 7180                   #
+# Date: 11/8/2022                   #
+#####################################
+
 import torch.nn.functional as F
 import torch
 import numpy as np
@@ -14,7 +20,6 @@ def generate(rnn, prime_id, int_to_vocab, token_dict, pad_value, sequence_length
     :param predict_len: The length of text to generate
     :return: The generated text
     """
-    train_on_gpu =False #torch.cuda.is_available()
 
     rnn.eval()
     
@@ -24,25 +29,20 @@ def generate(rnn, prime_id, int_to_vocab, token_dict, pad_value, sequence_length
     predicted = [int_to_vocab[prime_id]]
     
     for _ in range(predict_len):
-        if train_on_gpu:
-            current_seq = torch.LongTensor(current_seq).cuda()
-        else:
-            current_seq = torch.LongTensor(current_seq)
+
+        current_seq = torch.LongTensor(current_seq)
         
         # initialize the hidden state
         hidden = rnn.init_hidden(current_seq.size(0))
-
-        print(rnn)
-
-        print(f'current_seq: {current_seq.device}, hidden: {hidden[0].device}')
-
+        hidden = (hidden[0].cpu(),hidden[1].cpu())
+        
         # get the output of the rnn
         output, _ = rnn(current_seq, hidden)
         
         # get the next word probabilities
         p = F.softmax(output, dim=1).data
-        if(train_on_gpu):
-            p = p.cpu() # move to cpu
+
+        p = p.cpu() # move to cpu
          
         # use top_k sampling to get the index of the next word
         top_k = 5
@@ -73,13 +73,15 @@ def generate(rnn, prime_id, int_to_vocab, token_dict, pad_value, sequence_length
     # return all the sentences
     return gen_sentences
 
-gen_length = 1000 # modify the length to your preference
-prime_word = 'jerry' # name for starting the script
-pad_word = helper.SPECIAL_WORDS['PADDING']
+    
+if __name__=='__main__':
+    gen_length = 1000 # modify the length to your preference
+    prime_word = 'jerry' # name for starting the script
+    pad_word = helper.SPECIAL_WORDS['PADDING']
 
-torch.manual_seed(0)
-np.random.seed(0)
-trained_rnn = torch.load('rnn_train.pt',map_location='cpu')
-int_text, vocab_to_int, int_to_vocab, token_dict = helper.load_preprocess()
+    torch.manual_seed(0)
+    np.random.seed(0)
+    trained_rnn = torch.load('rnn_train.pt',map_location='cpu')
+    int_text, vocab_to_int, int_to_vocab, token_dict = helper.load_preprocess()
 
-generated_script = generate(trained_rnn, vocab_to_int[prime_word + ':'], int_to_vocab, token_dict, vocab_to_int[pad_word], gen_length)
+    generated_script = generate(trained_rnn, vocab_to_int[prime_word + ':'], int_to_vocab, token_dict, vocab_to_int[pad_word], gen_length)

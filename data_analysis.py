@@ -1,3 +1,9 @@
+#####################################
+# Name: Gopal Krishna, Gourav Beura #
+# Course: CS 7180                   #
+# Date: 11/8/2022                   #
+#####################################
+
 import numpy as np
 
 def get_unique_words(text):
