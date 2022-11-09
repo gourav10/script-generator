@@ -22,8 +22,9 @@ class Engine:
                  dropout=0.5,
                  learning_rate = 0.0009,) -> None:
         self.model = RNN(vocab_size, output_size, embedding_dim, hidden_dim, n_layers, dropout)
-        # if(torch.cuda.is_available()):
-        #     self.model.to(device='cuda')
+        
+        if(torch.cuda.is_available()):
+            self.model.to(device='cuda')
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
         self.criterion = nn.CrossEntropyLoss()
@@ -67,8 +68,8 @@ class Engine:
         :param target: The target output for the batch of input
         :return: The loss and the latest hidden state Tensor
         """
-        # if (torch.cuda.is_available()):
-        #     inp, target = inp.to('cuda'), target.to('cuda')
+        if (torch.cuda.is_available()):
+            inp, target = inp.to('cuda'), target.to('cuda')
 
         hidden = tuple([each.data for each in hidden])
 
